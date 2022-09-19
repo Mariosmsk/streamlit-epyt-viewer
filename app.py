@@ -48,13 +48,15 @@ def save_epanet_file(file_content, inp_name):
 
 
 def app():
+    title = 'Please select a network from the EPyT database or upload your network.'
+    st.markdown(f'<b><p style="color:black;font-size:25px;border-radius:2%;">{title}</p></b>',
+                unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
-        option = st.selectbox('Select a network from the database', tuple(networksdb))
+        option = st.selectbox("", tuple(networksdb))
 
     with col2:
-        file = st.file_uploader("Please choose a network from your pc or try to view a network from the EPyT database.",
-                                type=["inp"])
+        file = st.file_uploader("", type=["inp"])
 
     if file is not None:
         option = save_epanet_file(file, file.name)
