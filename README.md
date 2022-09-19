@@ -1,2 +1,2 @@
-# streamlit-epyt-viewer
-Online EPANET Viewer
+# epyt-viewer
+Online EPANET Viewer using streamlit.
