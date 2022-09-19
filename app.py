@@ -26,6 +26,15 @@ st.sidebar.info(
     """
 )
 
+# Load default network
+option = 'Net1.inp'
+d = epanet(option, loadfile=True)
+
+# Find all networks in epyt database.
+networksdb = d.getNetworksDatabase()
+networksdb.sort()
+d.unload()
+
 
 @st.cache
 def save_epanet_file(file_content, inp_name):
@@ -39,18 +48,13 @@ def save_epanet_file(file_content, inp_name):
 
 
 def app():
-    # Load default network
-    option = 'Net1.inp'
-    d = epanet(option, loadfile=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        option = st.selectbox('Select a network from the database', tuple(networksdb))
 
-    # Find all networks in epyt database.
-    networksdb = d.getNetworksDatabase()
-    networksdb.sort()
-    d.unload()
-
-    file = st.file_uploader("Please choose a network from your pc or try to view a network from the EPyT database.",
-                            type=["inp", "INP"])
-    option = st.selectbox('Select a network from the database', tuple(networksdb))
+    with col2:
+        file = st.file_uploader("Please choose a network from your pc or try to view a network from the EPyT database.",
+                                type=["inp"])
 
     if file is not None:
         option = save_epanet_file(file, file.name)
