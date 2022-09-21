@@ -33,7 +33,6 @@ d = epanet(option, loadfile=True)
 # Find all networks in epyt database.
 networksdb = d.getNetworksDatabase()
 networksdb.sort()
-d.unload()
 
 
 @st.cache
@@ -60,48 +59,47 @@ def app():
 
     if file is not None:
         option = save_epanet_file(file, file.name)
-        st.write('You uploaded netowrk:', file.name)
+        st.write('You uploaded network:', file.name)
 
     else:
         st.write('You selected:', option)
 
-    d = epanet(rf'{option}'.replace('\\', '/'), loadfile=True)
-    nodecoords = d.getNodeCoordinates()
-    x = list(nodecoords['x'].values())
-    y = list(nodecoords['y'].values())
+    if st.button('RUN'):
+        d = epanet(rf'{option}'.replace('\\', '/'), loadfile=True)
+        nodecoords = d.getNodeCoordinates()
+        x = list(nodecoords['x'].values())
+        y = list(nodecoords['y'].values())
 
-    layout = go.Layout(
-        autosize=True,
-        # width=1000,
-        # height=600,
-        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        margin=go.layout.Margin(
-            l=5,
-            r=5,
-            b=5,
-            t=5,
-            pad=4
+        layout = go.Layout(
+            autosize=True,
+            # width=1000,
+            # height=600,
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            margin=go.layout.Margin(
+                l=5,
+                r=5,
+                b=5,
+                t=5,
+                pad=4
+            )
         )
-    )
-    all_figures = []
+        all_figures = []
 
-    node_link_i_ds = d.getNodesConnectingLinksID()
-    node_indices = d.getNodeIndex
-    for i, l in enumerate(node_link_i_ds):
-        x0, y0 = x[node_indices(l[0]) - 1], y[node_indices(l[0]) - 1]
-        x1, y1 = x[node_indices(l[1]) - 1], y[node_indices(l[1]) - 1]
-        fig1 = px.line(x=[x0, x1], y=[y0, y1])
-        all_figures.append(fig1)
-    nodes_type = d.getNodeType()
-    fig2 = px.scatter(x=x, y=y, color=nodes_type)
-    all_figures.append(fig2)
-
-    d.unload()
-    fig3 = go.Figure(data=functools.reduce(operator.add, [_.data for _ in all_figures]), layout=layout)
-    st.plotly_chart(fig3)
+        node_link_i_ds = d.getNodesConnectingLinksID()
+        node_indices = d.getNodeIndex
+        for i, l in enumerate(node_link_i_ds):
+            x0, y0 = x[node_indices(l[0]) - 1], y[node_indices(l[0]) - 1]
+            x1, y1 = x[node_indices(l[1]) - 1], y[node_indices(l[1]) - 1]
+            fig1 = px.line(x=[x0, x1], y=[y0, y1])
+            all_figures.append(fig1)
+        nodes_type = d.getNodeType()
+        fig2 = px.scatter(x=x, y=y, color=nodes_type)
+        all_figures.append(fig2)
+        fig3 = go.Figure(data=functools.reduce(operator.add, [_.data for _ in all_figures]), layout=layout)
+        st.plotly_chart(fig3)
 
 
 try:
