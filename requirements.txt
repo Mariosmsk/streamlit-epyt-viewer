@@ -1,3 +1,4 @@
 epyt
 streamlit
 plotly
+protobuf~=3.19.0
